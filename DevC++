@@ -1,0 +1,11 @@
+/**
+    This program is created by @showha
+    if you have any question, please email ritianzhang@foxmail.com
+**/
+#include <stdio.h>
+int main(void)
+{
+    printf("Hello World!\n");
+    
+    return 0;
+}
