@@ -34,7 +34,11 @@ void strptr( char* ptr[], int cnt)
 	char* p = NULL;
 
 	for (i = 0; i < cnt; i++)
+<<<<<<< HEAD
 		for (j = 1; j < cnt-i; j++)
+=======
+		for (j = i+1; j < cnt-i; j++)
+>>>>>>> 9c47fe5a2f5bb4aa8c6bfaec0dbddab22da9f18e
 		{
 			if ( strncmp( *(ptr+j-1), *(ptr+j), SIZE) > 0)
 			{
