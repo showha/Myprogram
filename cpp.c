@@ -1,46 +1,14 @@
 #include <stdio.h>
-#include <ctype.h>
-#include <string.h>
-#define LIMIT   81
+#include <stdlib.h>
 
-void ToUpper(char* );
-int PuctCount(const char* );
-
-int main(void)
+int main(int argc, char* argv[])
 {
-    char line[LIMIT];
-    char* find;
-
-    fputs("Please enter a line:", stdout);
-    fgets( line, LIMIT, stdin);
-    find = strchr( line, '\n');
-    if (find)
-        *find = '\0';
-    ToUpper(line);
-    fputs( line, stdout);
-    printf("That's line has %d puctuation characters.\n", PuctCount(line));
+    int time;
+    if ( argc < 2 || (time = atoi( argv[1] )) < 1)
+        printf("Please enter %s+possitive inter\n", argv[0]);
+    else
+        for ( int i = 0; i < time; i++)
+            printf("Hello, good looking!\n");
 
     return 0;
-}
-
-void ToUpper(char* str)
-{
-    while (*str)
-    {
-        *str = toupper(*str);
-        str++;
-    }
-}
-
-int PuctCount(const char* str)
-{
-    int ct = 0;
-    while (*str)
-    {
-        if (ispunct(*str))
-            ct++;
-        str++;
-    }
-
-    return ct;
 }
