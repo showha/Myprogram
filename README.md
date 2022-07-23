@@ -10,13 +10,13 @@
 
 ## 对于想要直接结束方法，有两种方式：
 
-1.`System.exit(0)`; 退出JVM(即关机)
-2.`return` `~~~`; 直接退出方法，将控制权交给调用方
-`int[] arr = new int[5];`
-`int`: 表明该数组的元素为int类型
-`[]`: 表明这是一个数组
-`arr`: 表明这是该数组的名称
-`new`: 为该数组分配空间（堆内存）
+1.`System.exit(0)`; 退出JVM(即关机)  
+2.`return` `~~~`; 直接退出方法，将控制权交给调用方  
+`int[] arr = new int[5];`   
+`int`: 表明该数组的元素为int类型  
+`[]`: 表明这是一个数组  
+`arr`: 表明这是该数组的名称  
+`new`: 为该数组分配空间（堆内存）  
 
 ## `System.out.println(arr)`;
 
@@ -313,8 +313,9 @@ Java提供了导包功能，即在声明包名后，输入（例）：`import ja
 | default                                                                                                                       | Yes  | Yes            | No         | No           |
 | protected                                                                                                                     | Yes  | Yes            | Yes        | No           |
 | public                                                                                                                        | Yes  | Yes            | Yes        | Yes          |
-| 总结起来就是：`private`仅限于本类访问和调用，`default`适用于同包类，而`protected`适用于能跟它产生关系的所有类（同包和其子类） |      |                |            |              |
-| `public`则是完全开放，任何类都能够调用和访问。                                                                                |      |                |            |              |
+
+ 总结起来就是：`private`仅限于本类访问和调用，`default`适用于同包类，而`protected`适用于能跟它产生关系的所有类（同包和其子类）
+`public`则是完全开放，任何类都能够调用和访问。
 
 ## 状态修饰符：
 
