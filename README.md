@@ -1,11 +1,11 @@
 # Java操作表：
 
-`arr.length` *arr*为数组名，此操作是为了获取数组的长度
-`System.out.print()` 输出内容，但是不换行
-`System.out.println()` 输出内容，且换行
-*psvm* + *Tab*键：快速生成main方法
-*sout* + *Tab*键：快速生成输出函数
-*Alt* + *Insert*键：快速生成各种基本方法
+`arr.length` *arr*为数组名，此操作是为了获取数组的长度  
+`System.out.print()` 输出内容，但是不换行  
+`System.out.println()` 输出内容，且换行  
+*psvm* + *Tab*键：快速生成main方法  
+*sout* + *Tab*键：快速生成输出函数  
+*Alt* + *Insert*键：快速生成各种基本方法  
 *Ctrl* + *B*键：选中方法后，使用此快捷键可以查看该方法的源码
 
 ## 对于想要直接结束方法，有两种方式：
@@ -80,8 +80,8 @@ Outer:for(int i=101;i<150;i++) {
 
 ## 数组访问的问题：
 
--索引越界：要访问的位置超过数组的范围`ArrayIndexOutOfBoundException`
--空指针异常：访问的数组已不再指向堆内存数据（或指向为`null`），造成空指针异常 `NoPointer`
+-索引越界：要访问的位置超过数组的范围`ArrayIndexOutOfBoundException`  
+-空指针异常：访问的数组已不再指向堆内存数据（或指向为`null`），造成空指针异常 `NoPointer`  
 -`null`：指要访问的数据类型默认为`null`
 
 ## 稀疏数组：
@@ -283,17 +283,19 @@ E：指泛型，需要什么类型，E就是那个类型(String、Char、int...)
 
 #### 添加方法：
 
-无参：`public ArrayList()` 创建一个空集合
-有参：`public boolean add(E e)` 将指定元素e添加到末尾
+无参：  
+`public ArrayList()` 创建一个空集合  
+有参：  
+`public boolean add(E e)` 将指定元素e添加到末尾  
 `public void add(int index, E element)`
 在指定位置插入元素
 
 #### 成员方法：
 
-`public boolean remove(Object o)` 删除指定元素，并判断是否成功
-`public E remove(int index)` 删除指定位置的元素，并返回被删除的元素
-`public E set(int index, E element)` 修改指定位置的元素，返回被修改的元素
-`public E get(int index)` 返回被索引的元素
+`public boolean remove(Object o)` 删除指定元素，并判断是否成功  
+`public E remove(int index)` 删除指定位置的元素，并返回被删除的元素  
+`public E set(int index, E element)` 修改指定位置的元素，返回被修改的元素  
+`public E get(int index)` 返回被索引的元素  
 `public int size()` 返回集合的大小
 
 ## 继承：
@@ -322,7 +324,10 @@ super(参数)同this(参数)，应为本构造方法的第一条语句，意为�
 
 ## `instanceof`：
 判断两边是否为继承关系。该关键字的前面为实例对象，后边为类名。  
-记住要判断的两个应要具有一定的关系。要么具有继承关系，要么两者拥有共同的父类（父类的父类并不考虑）
+记住要判断的两个应要具有一定的关系。要么具有继承关系，要么两者拥有共同的父类（具有父类的父类并不考虑），不然会编译报错。  
+若有继承关系则为True，否则为False。
+### 注意：
+接口实现的子类与接口的关系为False，但是抽象类的子类与该抽象类的关系为True。
 
 ## 方法重写：
 
