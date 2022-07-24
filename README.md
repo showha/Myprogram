@@ -7,7 +7,8 @@
 *sout* + *Tab*键：快速生成输出函数  
 *Alt* + *Insert*键：快速生成各种基本方法  
 *Ctrl* + *B*键：选中方法后，使用此快捷键可以查看该方法的源码  
-*Ctrl* + *Alt* + *t*键：选中代码行后，使用此快捷键可以选择并生成各种代码块，并自动包含选中的代码。（包括*try-catch*）
+*Ctrl* + *Alt* + *t*键：选中代码行后，使用此快捷键可以选择并生成各种代码块，并自动包含选中的代码。（包括*try-catch*）  
+*Alt* + *Enter*键：IDEA中使用此快捷键可以查看IDEA自动添加波浪线处的详细问题（即展开所有该处的只能提示）
 
 ## 对于想要直接结束方法，有两种方式：
 
@@ -62,6 +63,40 @@ try {
 - 在方法中需要通过关键字`throw`抛出异常对象
 - 如果是在当前方法处理异常，使用*try-catch*语句，否则请在方法声明处通过`throws`关键字指明要抛出给方法调用者的异常，继续执行下一步操作
 - 在出现异常的调用者中捕获并处理异常
+```
+public class MyException extends Exception {
+    private int detail;
+
+    public MyException(int detail) {
+        this.detail = detail;
+    }
+
+    @Override
+    public String toString() {
+        return "MyException{" +
+                "detail=" + detail +
+                '}';
+    }
+}
+```
+```
+public class Demo {
+    public static void test(int n) throws MyException {
+        if (n > 10) {
+            throw new MyException(n);
+        }
+    }
+
+    public static void main(String[] args) {
+        int n = 11;
+        try {
+            test(n);
+        } catch (MyException e) {
+            System.out.println("MyException > " + e);
+        }
+    }
+}
+```
 
 [^1]: 需要自定义一个新类，该类需要继承Exception类，要有私有方法、构造方法，最好还要重写toString()方法
 
