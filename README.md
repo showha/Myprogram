@@ -6,7 +6,8 @@
 *psvm* + *Tab*键：快速生成main方法  
 *sout* + *Tab*键：快速生成输出函数  
 *Alt* + *Insert*键：快速生成各种基本方法  
-*Ctrl* + *B*键：选中方法后，使用此快捷键可以查看该方法的源码
+*Ctrl* + *B*键：选中方法后，使用此快捷键可以查看该方法的源码  
+*Ctrl* + *Alt* + *t*键：选中代码行后，使用此快捷键可以选择并生成各种代码块，并自动包含选中的代码。（包括*try-catch*）
 
 ## 对于想要直接结束方法，有两种方式：
 
@@ -17,6 +18,52 @@
 `[]`: 表明这是一个数组  
 `arr`: 表明这是该数组的名称  
 `new`: 为该数组分配空间（堆内存）  
+
+## Java异常：
+### 主要有三种类型：
+#### 检查性异常：
+典型的案例就是用户错误或问题引起的异常，这是程序员所无法预见的  
+例如要打开一个不存在的文件时，异常就发生了，这些异常在编译时不能被简单地忽略
+#### 运行时异常：
+这种异常可能是被程序员避免地异常，与检查性异常相反，该异常可以在编译时被忽略
+#### 出错：
+错误不是异常，而是脱离程序员控制的问题。错误在代码中通常被忽略。例如当栈溢出时，一个错误就发生了，它们在编译时也是检查不到的。
+
+## Java异常的处理：
+### 主动抛出异常：
+使用`throw`关键字，一般包装在方法中，在满足某些情况下主动抛出异常。
+```
+public void judge(int a,int b) {
+    if (b==0) {
+        throw new ArithmeticException();
+    }
+}
+```
+使用`throws`关键字与方法声明中，用以表示该方法可能会抛出所声明的异常。一般是给更高一级的调用者抛出异常。
+```
+public void test(int a,int b) throws ArithmeticException {
+    System.out.println(a/b);
+}
+```
+### 捕获异常：
+使用*try-catch-finally*对异常进行捕获，与*python*相似。
+```
+try {
+    System.out.println(a/b);
+}catch(ArithmeticException e) {
+    System.out.println("算术错误");
+}finally {
+    System.out.println("Done");
+}
+```
+可以连续使用多个`catch`，就像`if-else`一样，但是`catch`所捕获的异常范围应从小到大*ArithmeticException*-*Exception*-*Throwable*或者没有包含关系
+### 自定义异常：
+- 创建自定义异常类[^1]
+- 在方法中需要通过关键字`throw`抛出异常对象
+- 如果是在当前方法处理异常，使用*try-catch*语句，否则请在方法声明处通过`throws`关键字指明要抛出给方法调用者的异常，继续执行下一步操作
+- 在出现异常的调用者中捕获并处理异常
+
+[^1]: 需要自定义一个新类，该类需要继承Exception类，要有私有方法、构造方法，最好还要重写toString()方法
 
 ## 位运算
 | & | &#124; | ~ | ^ | << | >> |
@@ -647,3 +694,7 @@ Integer ii = 10; ii += 10; 就隐含了`parseInt`方法，实现了
 带参构造：*public SimpleDateFormat(String pattern)*  
 构造一个`SimpleDateFormat`使用给定的模式和默认的默认日期格式符号FORMAT区域设置
 
+## Throwable类（`java.lang.Throwable`）：
+该类是Java所有异常类的超类，其有两个子类：Error类和Exception类。  
+Error通常是由JVM抛出的，一般是JVM运行错误以及在JVM试图执行程序时发生的类错误`NoClassDefFoundError`、链接错误`LinkageError`等。发生Error时JVM会终止运行
+Exception可以分为*运行时异常*和*非运行时异常*。这些异常通常是由逻辑错误引起的。
