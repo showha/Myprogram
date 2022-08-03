@@ -41,11 +41,11 @@
 
 ### 常用方法：
 
-![](File类常用方法1.png "File类常用方法1")
+![](Pictures/File类常用方法1.png "File类常用方法1")
 
-![](File类常用方法2.png "File类常用方法2")
+![](Pictures/File类常用方法2.png "File类常用方法2")
 
-![](File类常用方法3.png "File类常用方法3")
+![](Pictures/File类常用方法3.png "File类常用方法3")
 
 # IO流：
 
