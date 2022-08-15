@@ -1051,3 +1051,83 @@ public void test1() {
 }
 ~~~
 
+### 10.3.2  自定义类实现AOP (XML)
+
+这种方式使用的是定义切面的方法
+
+日志类：
+
+~~~java
+//在一个类中可以直接声明所有需要的方法，而不需要一个需要一个类的原生模式
+public class newLog {
+    public void before() {
+        System.out.println("=====方法执行前=====");
+    }
+    public void after() {
+        System.out.println("=====方法执行后=====");
+    }
+}
+~~~
+
+applicationContext.xml：
+
+~~~xml
+<bean id="new_log" class="zh.learn.newLog"/>
+<bean id="service" class="zh.learn.ServiceImpl"/>
+<aop:config>
+    <!-- 自定义切面，ref：要引用的类 -->
+    <aop:aspect ref="new_log">
+        <!--设置横切关注点-->
+        <aop:pointcut id="pointcut" expression="execution(* zh.learn.ServiceImpl.*(..))"/>
+        <!--在关注点之前使用-->
+        <aop:before method="before" pointcut-ref="pointcut"/>
+        <!--在关注点之后使用-->
+        <aop:after method="after" pointcut-ref="pointcut"/>
+        <!--可以使用前面提到的5个advice来插入-->
+    </aop:aspect>
+</aop:config>
+~~~
+
+测试类同原生。
+
+### 10.3.3 使用注解实现
+
+新增功能类：
+
+~~~java
+@Aspect
+public class newLog {
+    //里面的参数为切断点，下同
+    @Before("execution(* zh.learn.Service.*(..))")
+    public void before() {
+        System.out.println("=====方法执行前=====");
+    }
+    @After("execution(* zh.learn.Service.*(..))")
+    public void after() {
+        System.out.println("=====方法执行后=====");
+    }
+    @Around("execution(* zh.learn.Service.*(..))")
+    public void around(ProceedingJoinPoint jp) throws Throwable {
+        System.out.println("====环绕前====");
+        System.out.println(jp.getSignature());
+        System.out.println(jp.proceed());
+        System.out.println("====环绕后====");
+    }
+}
+~~~
+
+applicationContext.xml：
+
+```xml
+<!--设置目标bean，此bean即为切断点-->
+<bean id="service" class="zh.learn.ServiceImpl"/>
+<!--开启自动代理模式（AOP），开启注解支持 jdk(默认proxy-target-class="false")  cglib(proxy-target-class="true")-->
+<aop:aspectj-autoproxy/>
+```
+
+测试类同上。
+
+# 11、整合Mybatis
+
+# 12、声明式事务
+
