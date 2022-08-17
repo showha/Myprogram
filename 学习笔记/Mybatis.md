@@ -691,6 +691,7 @@ id	name	pwd
 <!--实体类中的属性名-->
 id	name	password
 <!--结果集映射-->
+<!--type的参数是实体类-->
 <resultMap id="UserMap" type="User">
     <!--column数据库中的字段，property实体类中的属性，-->
     <result column="id" property="id"></result>
@@ -1049,3 +1050,94 @@ log4j2默认会在classpath目录下寻找log4j2.xml、log4j.json、log4j.jsn等
 ### 6.3.4 测试
 
 像之前一样正常测试、运行即可，日志会自动根据配置输出（控制台或者日志文件）
+
+# 7、分页
+
+为什么要分页？
+
+- 减少数据的处理量
+
+## 7.1 使用Limit进行分页
+
+~~~sql
+SELECT * FROM NEWDATABASES.USER LIMIT STARTINDEX,PAGESIZE;
+~~~
+
+使用Mybatis实现分页，核心SQL
+
+1. UserMapper.java（接口）
+
+	~~~java
+	List<User> getUserByLimit(Map<String,Integer> map);
+	~~~
+
+2. UserMapper.xml
+
+	```xml
+	<!--resultMap的设置见5.3章节的设置-->
+	<select id="getUserByLimit" resultMap="UserMap" parameterType="map">
+	    select * from newDatabases.user limit #{startIndex},#{pageSize};
+	</select>
+	```
+
+3. 测试
+
+	~~~java
+	@Test
+	public void getUserByLimitTest() {
+	    SqlSession sqlSession = MybatisUtils.getSqlSession();
+	    UserMapper mapper = sqlSession.getMapper(UserMapper.calss);
+	    
+	    Map<String,Integer> map = new HashMap<String,Integer>();
+	    map.put("startIndex",1);
+	    map.put("pageSize",2);
+	    
+	    List<User> userList = mapper.getUserByLimit(map);
+	    for (User user : userList)
+	        System.out.println(user);
+	    
+	    sqlSession.close();
+	}
+	~~~
+
+## 7.2、RowBounds分页
+
+不再使用limit进行分页
+
+1. 接口
+
+	~~~java
+	List<User> getUserByRowBounds();
+	~~~
+
+2. UserMapper.xml
+
+	~~~xml
+	<select id="getUserByRowBounds" resultMap="UserMap">
+	    select * from newDatabases.user;
+	</select>
+	~~~
+
+3. 测试
+
+	~~~java
+	@Test
+	public void getUserByRowBoundsTest() {
+	    SqlSession sqlSession = MybatisUtils.getSqlSession();
+	    RowBounds rowBounds = new rowBounds(1,2);
+	    
+	    <!--这种方式与先前的其他sql操作联动不同，要多加注意-->
+	    List<User> userList = sqlSession.selectList("zh.learn.pojo.UserMapper.getUserByRowBounds",null,rowBounds);
+	    
+	    for (User user : userList)
+	        System.out.println(user);
+	    sqlSession.close();
+	}
+	~~~
+
+## 7.3 分页插件
+
+PageHelper：这个插件能够帮助我们实现分页查询，但我们仅作了解即可。
+
+# 8、 使用注解开发
+
