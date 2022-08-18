@@ -1141,3 +1141,388 @@ PageHelper：这个插件能够帮助我们实现分页查询，但我们仅作�
 
 # 8、 使用注解开发
 
+## 8.1 面向接口开发
+
+大家之前都学过面向对象编程，也学习过接口，但在真正的开发中，很多时候我们会选择面向接口编程
+
+**根本原因：解耦，可拓展，提高复用，分层开发中，上层不用管具体的实现，大家都遵守共同的标准，使得开发变得容易，规范性更好**
+
+在一个面向对象的系统中，系统的各种功能是由许许多多的不同对象协作完成的。在这种情况下，各个对象内部是如何实现自己的，对系统设计人员来讲就不那么重要了
+
+而各个对象之间的协作关系则成为了系统设计的关键。小到不同类之间的通信，大到各模块之间的交互，在系统设计之初都是要着重考虑的，这也是系统设计的主要工作内容。面向接口编程就是指按照这种思想来编程。
+
+**关于接口的理解**
+
+- 接口从更深层次的理解，应是定义（规范，约束）与实现（名实分离的原则）的分离
+- 接口的本身反映了系统设计人员对系统的抽象理解
+
+接口应有两类：
+
+- 第一类是对一个个体的抽象，它可对应为一个抽象体（abstract class）
+- 第二类是对一个个体某一方面的抽象，即形成一个抽象面（interface）
+- 一个个体有可能有多个抽象面。抽象体与抽象面是由区别的。
+
+**三个面向区别**
+
+- 面向对象是指，我们考虑问题时，以对象为单位，考虑它的属性和方法
+- 面向过程是指，我们考虑问题时，以一个具体的流程（事务过程）为单位，考虑它的实现
+- 接口设计与非接口设计是针对复用技术而言的，与面向对象（过程）不是一个问题，更多的体现就是对系统整体的架构
+
+## 8.2 使用注解开发
+
+1. 注解在接口上实现
+
+	~~~java
+	@Select("select * from user")
+	List<User> getUsers();
+	~~~
+
+	
+
+2. 需要在核心配置文件中绑定接口
+
+	```java
+	<!--绑定接口-->
+	<mappers>
+	    <mapper class="com.dz.dao.UserMapper"/>
+	</mappers>
+	```
+
+	注意，一旦这样绑定成功，那么之前配置的mapper.xml就会失效。在mapper.xml中mapper属性namespace绑定的就是接口，也就是说我们无需在接口中实现方法，而是在xml中进行重写（这样做更方便）。
+
+3. 测试（同之前的测试类，不变）
+
+- 本质：反射机制实现
+- 底层：动态代理
+
+![](Pictures/面向接口代理.png "面向接口代理")
+
+**MyBatis详细执行流程**
+
+![](Pictures/MyBatis详细执行流程.png "MyBatis详细执行流程")
+
+## 8.3 注解CRUD
+
+这个配置与上一小章节同，了解即可，真正开发的时候都是使用xml进行配置。
+
+## 8.4 注意点
+
+**关于@Param()注解**
+
+- 基本类型的参数或是String类型，需要加上
+- 引用类型不需要加
+- 如果只有一个基本类型的话，可以忽略
+- 在SQL中引用的就是这里的@Param()中设定的属性名
+
+**#{} 和 ${}区别**
+
+# 9、Lombok
+
+Lombok项目是一个Java库，它会自动插入编辑器和构建工具中，Lombok提供了一组有用的注释，用来消除Java类中的大量样板代码。仅五个字符(@Data)就可以替换数百行代码从而产生干净，简洁且易于维护的Java类
+
+使用步骤：
+
+- 安装IDEA的插件（新版的IDEA已经是捆绑安装了）
+
+- 导入依赖项
+
+	~~~xml
+	<!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+	<dependency>
+	    <groupId>org.projectlombok</groupId>
+	    <artifactId>lombok</artifactId>
+	    <version>1.18.22</version>
+	    <scope>provided</scope>
+	</dependency>
+	~~~
+
+	如果有时候始终无法使用注解（如：@Data、@Test）时，可以始终去掉依赖中的<scope\>这一属性（删除后，默认作用域为全局）
+
+## 9.1 包含的注解
+
+
+```java
+@Getter and @Setter
+@FieldNameConstants
+@ToString
+@EqualsAndHashCode
+@AllArgsConstructor, @RequiredArgsConstructor and @NoArgsConstructor
+@Log, @Log4j, @Log4j2, @Slf4j, @XSlf4j, @CommonsLog, @JBossLog, @Flogger, @CustomLog
+@Data
+@Builder
+@SuperBuilder
+@Singular
+@Delegate
+@Value
+@Accessors
+@Wither
+@With
+@SneakyThrows
+@val
+```
+
+## 9.2 使用
+
+我们常用的注解也就几个，有些注解可以根据名字来推测。@Data这一注解帮助创建无参构造、getter和setter方法、toString方法、equals和hashcode方法、compareTo方法等等必要的方法。要想既要无参又要有参构造方法，应同时使用@Data、@AllArgsConstructor和@NoArgsConstructor。
+
+**应该注意的是**如果在共同开发的过程中，因为这个依赖的侵入性太强，如果有一人使用Lombok，那么所有人都要启用此依赖。这对新手不友好。
+
+# 10、多对一处理
+
+多个学生对应一个老师
+
+## 10.1 测试环境的搭建
+
+1. 导入lombok
+2. 新建实体类Teacher,Student
+3. 建立Mapper接口
+4. 建立Mapper.xml文件
+5. 在核心配置文件中绑定注册我们的Mapper接口或者文件 【方式很多，随心选】
+6. 测试查询是否能够成功
+
+## 10.2 按照查询嵌套处理【复杂】
+
+**这种方式就是相当于select查询中的子查询。**
+
+```sql
+select s.id, s.name, (select t.name from teacher t where t.id = s.tid) as teach from student s;
+```
+
+### 10.2.1 实体类
+
+~~~java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Student {
+    private String name;
+    private String id;
+    private Teacher teacher;
+}
+~~~
+
+~~~java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Teacher {
+    private String name;
+    private String id;
+}
+~~~
+
+### 10.2.2 接口
+
+~~~java
+public interface StudentMapper {
+    List<Student> getStudent();
+}
+
+public interface TeacherMapper {
+    //..............
+}
+~~~
+
+### 10.2.3 配置文件
+
+StudentMapper.xml
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--绑定接口-->
+<mapper namespace="zh.pojo.Mapper">
+    <select id="getStudent" resultMap="StudentTeacher">
+        select * from newDatabase.student;
+    </select>
+    
+    <resultMap id="StudentTeacher" type="zh.pojo.Student">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <!--对象（属性）用association，集合用collection-->
+        <association property="teacher" column="tid" javaType="zh.pojo.Teacher"
+                     select="getTeacherByID"/>
+    </resultMap>
+    
+    <!--在StduentMapper接口中并没有此方法，我们使用xml配置了该方法，这个方法是我们新建的，不是在TeacherMapper中！-->
+    <select id="getTeacherByID" parameterType="String" resultType="zh.pojo.Teacher">
+        select * from newDatabase.teacher where id = #{id};
+    </select>
+</mapper>
+~~~
+
+在mybatis-config.xml中设置
+
+~~~xml
+<mappers>
+    <mapper resource="zh/pojo/Mapper.xml"/>
+</mappers>
+~~~
+
+### 10.2.4 测试类
+
+同先前一样，没有改变。
+
+## 10.3 按照结果嵌套处理【简单】
+
+### 10.3.1 实体类
+
+同嵌套查询的实体类，没有变化
+
+### 10.3.2 接口
+
+无变化
+
+### 10.3.3 配置文件
+
+StudentMapper.xml
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="zh.pojo.StudentMapper">    
+    <select id="getStudent2" resultMap="StudentTeacher2">
+        select s.id sid, s.name sname, t.name tname, t.id as tid
+        from newDatabase.student s
+        left join newDatabase.teacher t
+        on t.id = s.tid;
+    </select>
+    
+    <resultMap id="StudentTeacher2" type="zh.pojo.Student">
+        <result column="sid" property="id"/>
+        <result column="sname" property="name"/>
+        <association property="teacher" javaType="zh.pojo.Teacher">
+            <result column="tname" property="name"/>
+            <result column="tid" property="id"/>
+        </association>
+    </resultMap>
+</mapper>
+~~~
+
+### 10.3.4 测试类
+
+无变化
+
+## 10.4 小结
+
+- 嵌套查询对应Mysql中的子查询，配置简单，当项目较小时更容易控制
+- 联表查询对应Mysql中的内外连接，效率更高（子查询中有重复查询的现象），但配置稍微复杂，适合于大项目
+
+# 11、一对多处理
+
+一个老师对应多个学生
+
+## 11.1 实体类
+
+~~~java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Teacher {
+    private String name;
+    private String id;
+    private List<Student> studentList;
+}
+/////////////////////////////////////
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Student {
+    private String name;
+    private String id;
+    private String tid;
+}
+~~~
+
+## 11.2 接口
+
+~~~java
+public interface TeacherMapper {
+    Teacher getTeacherByID1(@Param("tid") String id);
+}
+~~~
+
+
+
+## 11.3 按照结果嵌套查询处理【复杂】
+
+**联表查询一定要起别名**，否则映射的时候大概率会出问题。
+
+~~~xml
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="zh.dao.TeacherMapper">
+    <select id="getTeacherByID1" resultMap="TeacherStudent1">
+        select t.id as tid, t.name tname, s.name sname, s.id sid
+        from newDatabase.teacher t
+        left join newDatabase.student s
+        on t.id = s.tid where t.id = #{tid};
+    </select>
+
+    <resultMap id="TeacherStudent1" type="zh.pojo.Teacher">
+        <result column="tid" property="id"/>
+        <result column="tname" property="name"/>
+        <collection property="studentList" ofType="zh.pojo.Student">
+            <result column="sname" property="name"/>
+            <result column="tid" property="tid"/>
+            <result column="sid" property="id"/>
+        </collection>
+    </resultMap>
+</mapper>
+~~~
+
+调用过程：当mapper实例调用getTeacherByID1方法时，自动将参数传入对应的**tid**中，tid填充进select中。在查询的过程中，每一条结果按照TeacherStudent1的指定进行映射。在映射配置中，使用collection配置集合。因为联表查询一次只会得到一条结果，所以不设定javaType。**注意**：使用联表查询中t.id=#{tid}这一条件不能置于on中。**原因**：上面的代码是左外连接，无论on的结果是否为真，都会返回所有的teacher表查询结果（在作者的测试中是得到两列结果，发生冲突，编译器只期望得到一个老师的结果或者为空，但是却返回了两个老师的结果，进而报错）。而使用where则过滤了另外一个老师的结果，返回正确。
+
+## 11.4 按照查询嵌套处理【简单】
+
+~~~xml
+<select id="getTeacherByID2" resultMap="TeacherStudent2">
+    select * from newDatabase.teacher where id = #{tid};
+</select>
+
+<resultMap id="TeacherStudent2" type="zh.pojo.Teacher">
+    <result property="id" column="id"/>
+    <result property="name" column="name"/>
+    <collection property="studentList" javaType="ArrayList" ofType="zh.pojo.Student"
+                select="getStudentByID" column="id"/>
+</resultMap>
+
+<select id="getStudentByID" resultType="zh.pojo.Student">
+    select * from newDatabase.student where tid = #{id};
+</select>
+~~~
+
+这个是子查询，可以不用起别名+映射（最好还是映射一下）。因为使用了子查询，一次查询返回的是多条结果，所以要设定javaType，指定其为集合类型。在属性collection中，column的值为本次外查询对应的字段名的值，并映射给select。
+
+## 11.5 小结
+
+1. 关联：association 【多对一】
+2. 集合：collection 【一对多】
+3. javaType & ofType
+	1. javaType 用来指定实体类中属性的类型
+	2. ofType 用来指定映射到List或者集合中的pojo类型，泛型中的约束类型！
+
+注意点：
+
+- 保证SQL的可读性，尽量保证通俗易懂
+- 注意一对多和多对一中，属性名和字段的问题
+- 如果问题不好排查错误，可以使用使用日志，建议使用 **Log4j2**
+
+面试高频
+
+- Mysql引擎
+- InnoDB底层原理
+- 索引
+- 索引优化
+
+# 12、动态SQL
+
