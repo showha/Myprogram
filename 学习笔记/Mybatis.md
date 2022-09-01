@@ -1526,3 +1526,184 @@ public interface TeacherMapper {
 
 # 12、动态SQL
 
+**什么是动态SQL？**
+
+**动态SQL就是根据不同的条件生成不同的SQL语句**
+
+如果你之前用过 JSTL 或任何基于类 XML 语言的文本处理器，你对动态 SQL 元素可能会感觉似曾相识。在 MyBatis 之前的版本中，需要花时间了解大量的元素。借助功能强大的基于 OGNL 的表达式，MyBatis 3 替换了之前的大部分元素，大大精简了元素种类，现在要学习的元素种类比原来的一半还要少。
+
+- if
+- choose (when, otherwise)
+- trim (where, set)
+- foreach
+
+## 12.1 搭建测试用例的数据库
+
+~~~sql
+CREATE TABLE `blog` (
+	`id` VARCHAR(50) NOT NULL COMMENT '博客id',
+	`title` VARCHAR(100) NOT NULL COMMENT '博客标题',
+	`author` VARCHAR(30) NOT NULL COMMENT '博客作者',
+	`create_time` datetime NOT NULL COMMENT '创建时间',
+	`views` INT(30) NOT NULL COMMENT '浏览量'
+) ENGINE=INNODB DEFAULT CHARSET=utf8
+~~~
+
+创建一个基础工程：
+
+1. 导包
+
+2. 编写配置文件
+
+3. 编写实体类
+
+	~~~java
+	@Data
+	public class Blog {
+	    private int id;
+	    private String title;
+	    private String author;
+	    private Date createTime;
+	    private int views;
+	}
+	~~~
+
+4. 编写实体类对应Mapper接口和Mapper.xml文件
+
+## 12.2 IF
+
+~~~xml
+<select id="queryBlog" parameterType="map" resultType="Blog">
+    select * from blog where 1=1
+    <if test="title != null">
+        and title = #{title}
+    </if>
+    <if test="author != null">
+        and author = #{author}
+    </if>
+</select>
+~~~
+
+这里添加`where 1=1`的目的是：当两个if的条件都不成立时，保证select语句能够正常执行。（即查询全部）同时，如果不把where写在select语句的结尾，那么每一条if语句的执行体前面都要加上where，如果多条if同时成立，那么就会有多个where，进而报错！
+
+## 12.3 Choose（when，otherwise）
+
+~~~xml
+<select id="queryBlogChoose" resultType="Blog" parameterType="map">
+    select * from blog
+    <where>
+        <choose>
+            <when test="title !=null">
+                title = #{title}
+            </when>
+            <when test="author != null">
+                and author = #{author}
+            </when>
+            <otherwise>
+                and views = #{views}
+            </otherwise>
+        </choose>
+    </where>
+</select>
+~~~
+
+在where属性内，如果有条件成立，那么Mybatis就会自动与where组合。再看choose属性：这个的性质与Java中的switch-case语句十分相似，如果同时有两条when成立，那么mybatis只会选择最开头的when（同case的特性）。这里when相当于if，otherwise相当于else。
+
+## 12.4 trim（where，set）
+
+~~~xml
+select * from blog
+<where>
+    <if test="title != null">
+    	title = #{title}
+    </if>
+    <if test="author != null">
+    	and author = #{author}
+    </if>
+</where>
+~~~
+
+~~~xml
+<update id="updateBlog" parameterType="map">
+    update blog
+    <set>
+        <if test="title !=null">
+            title = #{title} ,
+        </if>
+        <if test="author != null">
+            author = #{author}
+        </if>
+    </set>
+    where id = #{id}
+</update>
+~~~
+
+*where* 元素只会在子元素返回任何内容的情况下才插入 “WHERE” 子句。而且，若子句的开头为 “AND” 或 “OR”，*where* 元素也会将它们去除。
+
+如果 *where* 元素与你期望的不太一样，你也可以通过自定义 trim 元素来定制 *where* 元素的功能。比如，和 *where* 元素等价的自定义 trim 元素为：
+
+~~~xml
+<!--其中prefix意为前缀，即要在本语句前添加的单词；后面的prefixOverrides则是删除指定的前缀（管道分隔符前的空格是必要的-->
+<trim prefix="WHERE" prefixOverrides="AND |OR ">
+  ...
+</trim>
+~~~
+
+这个例子中，*set* 元素会动态地在行首插入 SET 关键字，并会删掉额外的逗号（这些逗号是在使用条件语句给列赋值时引入的）。
+
+或者，你可以通过使用*trim*元素来达到同样的效果：
+
+```xml
+<!--同样的prefix，suffixOverrides意为删除本条语句指定的后缀-->
+<trim prefix="SET" suffixOverrides=",">
+  ...
+</trim>
+```
+
+==**所谓的动态SQL，本质还是SQL语句，只是我们可以在SQL层面，去执行一个逻辑代码**==
+
+## 12.5 foreach
+
+批量添加与删除
+
+~~~xml
+<insert id="insertMoreBlog" useGeneratedKeys="true" keyProperty="id">
+    insert into newDatabase.blog values
+    <foreach collection="blogs" separator="," item="blog">
+        (null,#{blog.title},#{blog.author},#{blog.createTime},#{blog.views})
+    </foreach>
+</insert>
+
+<delete id="deleteMoreBlog1">
+    delete from newDatabase.blog where id in
+    <foreach collection="blogIDs" item="blogID" separator="," open="(" close=")">
+        #{blogID}
+    </foreach>
+</delete>
+
+<delete id="deleteMoreBlog2">
+    delete from newDatabase.blog
+    <where>
+        <foreach collection="blogIDs" item="blogID" separator="or">
+            id = #{blogID}
+        </foreach>
+    </where>
+</delete>
+~~~
+
+foreach的作用就相当于遍历数据库，取出符合要求的字段，按照设定进行相应的拼接成一个字段，最后再与前置sql语句拼接成一个完整的sql语句。
+
+实际上deleteMoreBlog1与deleteMoreBlog2几乎相同。虽然在代码层面上看仍有较大区别，但是实际上sql会进行优化（不知道Spring框架是否也会参与优化），最后优化出来的语句都是`where in`
+
+## 12.6 SQL片段
+
+sql片段，可以记录一段公共sql片段，在使用的地方通过include标签进行引入
+
+~~~xml
+<sql id="empColumns">
+eid,ename,age,sex,did
+</sql>
+
+<!--引用-->
+select <include refid="empColumns"/>from t_emp
+~~~

@@ -20,13 +20,13 @@ GitHub开源地址：https:/lgithub.comlspring-projects/spring-framework
 
 ~~~xml
 <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-webmvc</artifactId>
-            <version>5.3.22</version>
-        </dependency>
-    </dependencies>
+    <!-- https://mvnrepository.com/artifact/org.springframework/spring-webmvc -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>5.3.22</version>
+    </dependency>
+</dependencies>
 ~~~
 
 上述配置可以一键设置，当然也可以选择jdbc的设置。
@@ -1128,6 +1128,8 @@ applicationContext.xml：
 测试类同上。
 
 # 11、整合Mybatis
+
+
 
 # 12、声明式事务
 
