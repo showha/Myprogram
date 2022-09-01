@@ -154,6 +154,33 @@ INSERT INTO `user` VALUES
 </configuration>
 ~~~
 
+或者导入jdbc.properties中的数据库配置：
+
+~~~properties
+driver=com.mysql.cj.jdbc.Driver
+url=jdbc:mysql://121.4.67.232:3306/newDatabase?useSSL=false&useUnicode=true&characterEncoding=UTF-8
+uname=root
+password=******
+~~~
+
+在配置文件中导入jdbc.properties
+
+~~~xml
+<!--引入jdbc.properties-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+    <property name="driverClassName" value="${driver}"/>
+    <property name="url" value="${url}"/>
+    <!--如果使用的是阿里的druid，则在配置文件jdbc.properties中对应的用户名
+        不能是username，不然会一直显示access denied-->
+    <property name="username" value="${uname}"/>
+    <property name="password" value="${password}"/>
+</bean>
+~~~
+
+上述配置文件实际上是从spring-jdbcTemplate.xml中截取的（这个为spring中声明式事务的内容·）
+
 编写Mybatis工具类（MybatisUtils.java）：
 
 ~~~java
